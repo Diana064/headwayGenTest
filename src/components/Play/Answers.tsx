@@ -25,15 +25,6 @@ export const Answers: React.FC<AnswersProps> = ({
   const handleAnswerClick = (option: string) => {
     setSelectedAnswer(option);
     handleSelectAnswer(option);
-
-    // Задержка перед очисткой выбранного ответа и переходом к следующему вопросу
-    setTimeout(() => {
-      setSelectedAnswer(null);
-      console.log('timeout');
-      if (isActiveQuestion(level)) {
-        handleSelectAnswer(null); // Очистка выбранного ответа перед переходом к следующему вопросу
-      }
-    }, 5000);
   };
 
   return (
@@ -49,7 +40,7 @@ export const Answers: React.FC<AnswersProps> = ({
         if (isAnsweredCorrectly) {
           className = 'correct';
         } else if (isAnsweredIncorrectly) {
-          className = 'incorrect';
+          className = 'wrong';
         } else if (isHovered) {
           className = 'hovered';
         }

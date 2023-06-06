@@ -3,7 +3,7 @@ import questionData from '../question.json';
 import { Money } from './Money';
 import { Question } from './Question';
 
-interface Question {
+interface QuestionInterface {
   question: string;
   options: string[];
   correctAnswer: string;
@@ -17,9 +17,10 @@ const Play: React.FC<PlayProps> = () => {
   const [score, setScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [prize, setPrize] = useState<string>('0');
+  const [, setShowPreviousAnswer] = useState(false); // Добавлено состояние для отображения предыдущего ответа
 
-  const questions: Question[] = questionData.questions;
-  const currentQuestion: Question = questions[level - 1];
+  const questions: QuestionInterface[] = questionData.questions;
+  const currentQuestion: QuestionInterface = questions[level - 1];
 
   const handleSelectAnswer = (answer: string | null) => {
     if (selectedAnswer === null) {
@@ -43,7 +44,9 @@ const Play: React.FC<PlayProps> = () => {
 
   useEffect(() => {
     if (selectedAnswer !== null) {
+      setShowPreviousAnswer(true);
       const timer = setTimeout(() => {
+        setShowPreviousAnswer(false);
         setSelectedAnswer(null);
         setLevel(level + 1);
       }, 2000); // Измените задержку в миллисекундах по своему усмотрению

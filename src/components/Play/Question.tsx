@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Answers } from './Answers';
-interface Question {
+interface QuestionInterface {
   question: string;
   options: string[];
   correctAnswer: string;
   prize: string;
 }
 interface QuestionProps {
-  currentQuestion: Question;
+  currentQuestion: QuestionInterface;
   isActiveQuestion: (questionIndex: number) => boolean;
   handleSelectAnswer: (answer: string | null) => void;
-  questions: Question[];
+  questions: QuestionInterface[];
   level: number;
 }
 export const Question: React.FC<QuestionProps> = ({
