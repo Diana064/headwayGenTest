@@ -3,7 +3,7 @@ export const theme = {
     orange: '#FF8B37',
     darkOrange: '#E87928',
     lightOrange: '#FFAC70',
-    orangeInvisible: '#FFF3EB',
+    invisibleOrange: '#FFF3EB',
     green: '#47D867',
     invisibleGreen: '#E6FAEA',
     red: '#EC6259',
@@ -40,7 +40,7 @@ export const theme = {
     none: '0',
     sm: '4px',
     md: '8px',
-    lg: '16px',
+    lg: '12px',
     round: '50%',
   },
 };

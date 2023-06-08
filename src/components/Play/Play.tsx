@@ -1,87 +1,83 @@
-import React, { useState, useEffect } from 'react';
-import questionData from '../question.json';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store/index';
+import { answerSelected, restartGame, setLevel } from '../../store/playSlice';
 import { Money } from './Money';
-import { Question } from './Question';
+import { QuizQuestion } from './Question';
+import End from '../End/End';
+import { PlayContent, PlayContentWrapper } from './Play.module';
+import { selectQuestions } from '../../store/gameSlice';
+import { setQuestions } from '../../store/gameSlice';
+import questionData from '../question.json';
 
-interface QuestionInterface {
-  question: string;
-  options: string[];
-  correctAnswer: string;
-  prize: string;
+interface PlayProps {
+  onRestart: () => void;
 }
 
-interface PlayProps {}
-
-const Play: React.FC<PlayProps> = () => {
-  const [level, setLevel] = useState(1);
-  const [score, setScore] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [prize, setPrize] = useState<string>('0');
-  const [, setShowPreviousAnswer] = useState(false); // Добавлено состояние для отображения предыдущего ответа
-
-  const questions: QuestionInterface[] = questionData.questions;
-  const currentQuestion: QuestionInterface = questions[level - 1];
+const Play: React.FC<PlayProps> = ({ onRestart }) => {
+  const dispatch = useDispatch();
+  const { score, selectedAnswer, prize, showGameOver, level } = useSelector(
+    (state: RootState) => state.play
+  );
+  const questions = useSelector(selectQuestions);
+  const currentQuestion = level ? questions[level - 1] : null;
 
   const handleSelectAnswer = (answer: string | null) => {
-    if (selectedAnswer === null) {
-      setSelectedAnswer(answer);
-      if (answer === currentQuestion.correctAnswer) {
-        setScore(score + 1);
-        setPrize(currentQuestion.prize);
-      } else {
-        setLevel(questions.length + 1);
-      }
+    if (selectedAnswer === null && answer !== null) {
+      dispatch(answerSelected(answer));
     }
   };
 
-  const isQuestionAnswered = (questionIndex: number): boolean => {
-    return questionIndex < level - 1;
+  const isQuestionAnswered = (questionIndex: number) => {
+    return questionIndex < (level ?? 1) - 1;
   };
 
-  const isActiveQuestion = (questionIndex: number): boolean => {
-    return questionIndex === level - 1;
+  const isActiveQuestion = (questionIndex: number) => {
+    return questionIndex === (level ?? 1) - 1;
   };
 
   useEffect(() => {
+    dispatch(setQuestions(questionData.questions));
+  }, [dispatch]);
+
+  useEffect(() => {
     if (selectedAnswer !== null) {
-      setShowPreviousAnswer(true);
       const timer = setTimeout(() => {
-        setShowPreviousAnswer(false);
-        setSelectedAnswer(null);
-        setLevel(level + 1);
-      }, 2000); // Измените задержку в миллисекундах по своему усмотрению
+        dispatch(setLevel((level ?? 1) + 1));
+      }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [selectedAnswer, level]);
+  }, [selectedAnswer, level, dispatch]);
+
+  const handleRestartGame = () => {
+    dispatch(restartGame());
+    onRestart();
+  };
 
   return (
-    <div>
-      <h1>Гра "Хто хоче стати мільйонером"</h1>
-      {level <= questions.length ? (
-        <div>
+    <PlayContent>
+      {level <= questions.length && !showGameOver ? (
+        <PlayContentWrapper>
           <Money
             questions={questions}
             isQuestionAnswered={isQuestionAnswered}
             isActiveQuestion={isActiveQuestion}
             currentQuestion={currentQuestion}
           />
-          <Question
-            handleSelectAnswer={handleSelectAnswer}
-            isActiveQuestion={isActiveQuestion}
-            questions={questions}
-            currentQuestion={currentQuestion}
-            level={level}
-          />
-        </div>
+          {currentQuestion !== null ? (
+            <QuizQuestion
+              handleSelectAnswer={handleSelectAnswer}
+              isActiveQuestion={isActiveQuestion}
+              questions={questions}
+              currentQuestion={currentQuestion}
+              level={level}
+            />
+          ) : null}
+        </PlayContentWrapper>
       ) : (
-        <div>
-          <div className="result-screen">
-            <h2>Гра завершена</h2>
-            <p>Ваш рахунок: {prize}</p>
-          </div>
-        </div>
+        <End prize={prize} onRestart={handleRestartGame} />
       )}
-    </div>
+    </PlayContent>
   );
 };
 

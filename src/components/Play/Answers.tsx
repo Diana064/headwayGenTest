@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store/index';
+import { answerSelected } from '../../store/playSlice';
+import {
+  AnswerButton,
+  AnswerItemSymbol,
+  AnswerList,
+  AnswerListItem,
+  AnswerItemText,
+} from './Play.module';
 
-interface Question {
+export interface Question {
+  level: number;
   question: string;
   options: string[];
   correctAnswer: string;
@@ -10,51 +21,73 @@ interface Question {
 interface AnswersProps {
   currentQuestion: Question;
   isActiveQuestion: (questionIndex: number) => boolean;
-  handleSelectAnswer: (answer: string | null) => void;
-  level: number; // Добавлено новое свойство level
+  level: number;
 }
 
 export const Answers: React.FC<AnswersProps> = ({
   currentQuestion,
   isActiveQuestion,
-  handleSelectAnswer,
   level,
 }) => {
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const dispatch = useDispatch();
+  const selectedAnswer = useSelector(
+    (state: RootState) => state.play.selectedAnswer
+  );
+  const [isAnswered, setIsAnswered] = useState(false);
 
-  const handleAnswerClick = (option: string) => {
-    setSelectedAnswer(option);
-    handleSelectAnswer(option);
+  const handleAnswerClick = (option: string | null) => {
+    if (!isAnswered) {
+      if (option === currentQuestion?.correctAnswer) {
+        setIsAnswered(true);
+        dispatch(answerSelected(option));
+      } else {
+        setIsAnswered(true);
+      }
+    }
   };
 
-  return (
-    <ul>
-      {currentQuestion.options.map((option, index) => {
-        const isAnsweredCorrectly =
-          selectedAnswer === option && option === currentQuestion.correctAnswer;
-        const isAnsweredIncorrectly =
-          selectedAnswer === option && option !== currentQuestion.correctAnswer;
-        const isHovered = selectedAnswer !== option;
+  const shouldResetStyles = level !== currentQuestion?.level;
 
-        let className = '';
-        if (isAnsweredCorrectly) {
-          className = 'correct';
-        } else if (isAnsweredIncorrectly) {
-          className = 'wrong';
-        } else if (isHovered) {
-          className = 'hovered';
+  return (
+    <AnswerList>
+      {currentQuestion.options.map((option, index) => {
+        const isHovered = selectedAnswer !== option;
+        let className = isHovered ? 'hovered' : '';
+
+        if (selectedAnswer === option) {
+          className += ' selected';
+
+          if (
+            isAnswered &&
+            selectedAnswer === option &&
+            level === currentQuestion.level
+          ) {
+            className +=
+              option === currentQuestion.correctAnswer ? ' correct' : ' wrong';
+          }
+        }
+
+        if (shouldResetStyles) {
+          className = '';
         }
 
         return (
-          <li
-            key={index}
-            onClick={() => handleAnswerClick(option)}
-            className={className}
-          >
-            <span>{String.fromCharCode(65 + index)}</span> {option}
-          </li>
+          <AnswerListItem key={index}>
+            <AnswerButton
+              onClick={() => handleAnswerClick(option)}
+              className={className}
+              disabled={isAnswered}
+            >
+              <AnswerItemText className={className}>
+                <AnswerItemSymbol>
+                  {String.fromCharCode(65 + index)}
+                </AnswerItemSymbol>{' '}
+                {option}
+              </AnswerItemText>
+            </AnswerButton>
+          </AnswerListItem>
         );
       })}
-    </ul>
+    </AnswerList>
   );
 };

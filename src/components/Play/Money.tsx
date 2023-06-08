@@ -1,16 +1,17 @@
 import React from 'react';
+import { MoneyList, MoneyItem, MoneyItemNumber } from './Play.module';
+
 interface Question {
   question: string;
   options: string[];
   correctAnswer: string;
   prize: string;
 }
-
 interface MoneyProps {
   questions: Question[];
   isQuestionAnswered: (questionIndex: number) => boolean;
   isActiveQuestion: (questionIndex: number) => boolean;
-  currentQuestion: Question;
+  currentQuestion: Question | null;
 }
 
 export const Money: React.FC<MoneyProps> = ({
@@ -20,25 +21,31 @@ export const Money: React.FC<MoneyProps> = ({
   currentQuestion,
 }) => {
   return (
-    <div className="sidebar">
-      <h3>Сума</h3>
-      <ul>
-        {questions.map((question, index) => (
-          <li
-            key={index}
-            className={
+    <MoneyList>
+      {questions.map((question, index) => (
+        <MoneyItem
+          key={index}
+          className={`${
+            isQuestionAnswered(index)
+              ? 'answered'
+              : isActiveQuestion(index)
+              ? 'current'
+              : ''
+          } `}
+        >
+          <MoneyItemNumber
+            className={`${
               isQuestionAnswered(index)
                 ? 'answered'
                 : isActiveQuestion(index)
                 ? 'current'
                 : ''
-            }
+            } `}
           >
             {question.prize}
-          </li>
-        ))}
-      </ul>
-      <p>Поточна сума: {currentQuestion.prize}</p>
-    </div>
+          </MoneyItemNumber>
+        </MoneyItem>
+      ))}
+    </MoneyList>
   );
 };
