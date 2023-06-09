@@ -1,35 +1,18 @@
-import React, { useEffect } from 'react';
-import { Answers, Question } from './Answers';
-import { QuestionsWrapper, QuestionsTitle } from './Play.module';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../reducers/gameReducer';
+const Question = () => {
+  const currentQuestion = useSelector(
+    (state: RootState) => state.currentQuestion
+  );
+  const questionsData = useSelector((state: RootState) => state.questionsData);
 
-interface QuestionProps {
-  currentQuestion: Question;
-  isActiveQuestion: (questionIndex: number) => boolean;
-  handleSelectAnswer: (answer: string | null) => void;
-  questions: Question[];
-  level: number;
-}
-
-export const QuizQuestion: React.FC<QuestionProps> = ({
-  currentQuestion,
-  isActiveQuestion,
-  handleSelectAnswer,
-  questions,
-  level,
-}) => {
-  useEffect(() => {
-    // console.log(currentQuestion);
-    // console.log(isActiveQuestion);
-    // console.log(level);
-  }, []);
   return (
-    <QuestionsWrapper>
-      <QuestionsTitle>{currentQuestion.question}</QuestionsTitle>
-      <Answers
-        currentQuestion={currentQuestion}
-        isActiveQuestion={isActiveQuestion}
-        level={level}
-      />
-    </QuestionsWrapper>
+    <div>
+      <h2>Question {currentQuestion + 1}</h2>
+      <p>{questionsData.questions[currentQuestion].question}</p>
+    </div>
   );
 };
+
+export default Question;

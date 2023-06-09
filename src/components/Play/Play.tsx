@@ -1,84 +1,28 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store/index';
-import { answerSelected, restartGame, setLevel } from '../../store/playSlice';
-import { Money } from './Money';
-import { QuizQuestion } from './Question';
-import End from '../End/End';
-import { PlayContent, PlayContentWrapper } from './Play.module';
-import { selectQuestions } from '../../store/gameSlice';
-import { setQuestions } from '../../store/gameSlice';
-import questionData from '../question.json';
-
-interface PlayProps {
-  onRestart: () => void;
-}
-
-const Play: React.FC<PlayProps> = ({ onRestart }) => {
-  const dispatch = useDispatch();
-  const { score, selectedAnswer, prize, showGameOver, level } = useSelector(
-    (state: RootState) => state.play
+import React from 'react';
+import { useSelector } from 'react-redux';
+import Question from './Question';
+import Options from './Answers';
+import Prize from './Money';
+import EndGame from 'components/End/End';
+import { RootState } from '../../reducers/gameReducer';
+const Game = () => {
+  const currentQuestion = useSelector(
+    (state: RootState) => state.currentQuestion
   );
-  const questions = useSelector(selectQuestions);
-  const currentQuestion = level ? questions[level - 1] : null;
+  const questionsData = useSelector((state: RootState) => state.questionsData);
+  const isGameOver = currentQuestion === questionsData.questions.length;
 
-  const handleSelectAnswer = (answer: string | null) => {
-    if (selectedAnswer === null && answer !== null) {
-      dispatch(answerSelected(answer));
-    }
-  };
-
-  const isQuestionAnswered = (questionIndex: number) => {
-    return questionIndex < (level ?? 1) - 1;
-  };
-
-  const isActiveQuestion = (questionIndex: number) => {
-    return questionIndex === (level ?? 1) - 1;
-  };
-
-  useEffect(() => {
-    dispatch(setQuestions(questionData.questions));
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (selectedAnswer !== null) {
-      const timer = setTimeout(() => {
-        dispatch(setLevel((level ?? 1) + 1));
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [selectedAnswer, level, dispatch]);
-
-  const handleRestartGame = () => {
-    dispatch(restartGame());
-    onRestart();
-  };
+  if (isGameOver) {
+    return <EndGame />;
+  }
 
   return (
-    <PlayContent>
-      {level <= questions.length && !showGameOver ? (
-        <PlayContentWrapper>
-          <Money
-            questions={questions}
-            isQuestionAnswered={isQuestionAnswered}
-            isActiveQuestion={isActiveQuestion}
-            currentQuestion={currentQuestion}
-          />
-          {currentQuestion !== null ? (
-            <QuizQuestion
-              handleSelectAnswer={handleSelectAnswer}
-              isActiveQuestion={isActiveQuestion}
-              questions={questions}
-              currentQuestion={currentQuestion}
-              level={level}
-            />
-          ) : null}
-        </PlayContentWrapper>
-      ) : (
-        <End prize={prize} onRestart={handleRestartGame} />
-      )}
-    </PlayContent>
+    <div>
+      <Question />
+      <Options />
+      <Prize />
+    </div>
   );
 };
 
-export default Play;
+export default Game;

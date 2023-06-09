@@ -1,51 +1,16 @@
 import React from 'react';
-import { MoneyList, MoneyItem, MoneyItemNumber } from './Play.module';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../reducers/gameReducer'; // Update with the correct import path
 
-interface Question {
-  question: string;
-  options: string[];
-  correctAnswer: string;
-  prize: string;
-}
-interface MoneyProps {
-  questions: Question[];
-  isQuestionAnswered: (questionIndex: number) => boolean;
-  isActiveQuestion: (questionIndex: number) => boolean;
-  currentQuestion: Question | null;
-}
+const Prize = () => {
+  const prize = useSelector((state: RootState) => state.prize);
 
-export const Money: React.FC<MoneyProps> = ({
-  questions,
-  isQuestionAnswered,
-  isActiveQuestion,
-  currentQuestion,
-}) => {
   return (
-    <MoneyList>
-      {questions.map((question, index) => (
-        <MoneyItem
-          key={index}
-          className={`${
-            isQuestionAnswered(index)
-              ? 'answered'
-              : isActiveQuestion(index)
-              ? 'current'
-              : ''
-          } `}
-        >
-          <MoneyItemNumber
-            className={`${
-              isQuestionAnswered(index)
-                ? 'answered'
-                : isActiveQuestion(index)
-                ? 'current'
-                : ''
-            } `}
-          >
-            {question.prize}
-          </MoneyItemNumber>
-        </MoneyItem>
-      ))}
-    </MoneyList>
+    <div>
+      <h3>Current Prize:</h3>
+      <p>{prize}</p>
+    </div>
   );
 };
+
+export default Prize;

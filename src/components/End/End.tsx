@@ -1,24 +1,16 @@
 import React from 'react';
-import { ReactComponent as HandDescSvg } from '../image/start/handDesc.svg';
-import { Button } from '../App.module';
-import { EndContent, EndPrize, EndTitle, EndWrapper } from './End.module';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../reducers/gameReducer';
+const EndGame = () => {
+  const prize = useSelector((state: RootState) => state.prize);
 
-interface EndProps {
-  prize: string;
-  onRestart: () => void;
-}
-
-const End: React.FC<EndProps> = ({ prize, onRestart }) => {
   return (
-    <EndWrapper>
-      <HandDescSvg />
-      <EndContent>
-        <EndTitle>Total score:</EndTitle>
-        <EndPrize>{prize} earned</EndPrize>
-        <Button onClick={onRestart}>Try again</Button>
-      </EndContent>
-    </EndWrapper>
+    <div>
+      <h2>Game Over!</h2>
+      <p>Unfortunately, you did not win the million dollars.</p>
+      <p>Your final prize amount: {prize}</p>
+    </div>
   );
 };
 
-export default End;
+export default EndGame;
