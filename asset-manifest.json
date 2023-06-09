@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/headwayGenTest/static/css/main.a09dc432.css",
-    "main.js": "/headwayGenTest/static/js/main.27f12fb3.js",
+    "main.css": "/headwayGenTest/static/css/main.1ebbc928.css",
+    "main.js": "/headwayGenTest/static/js/main.942cbe8d.js",
     "index.html": "/headwayGenTest/index.html",
-    "main.a09dc432.css.map": "/headwayGenTest/static/css/main.a09dc432.css.map",
-    "main.27f12fb3.js.map": "/headwayGenTest/static/js/main.27f12fb3.js.map"
+    "main.1ebbc928.css.map": "/headwayGenTest/static/css/main.1ebbc928.css.map",
+    "main.942cbe8d.js.map": "/headwayGenTest/static/js/main.942cbe8d.js.map"
   },
   "entrypoints": [
-    "static/css/main.a09dc432.css",
-    "static/js/main.27f12fb3.js"
+    "static/css/main.1ebbc928.css",
+    "static/js/main.942cbe8d.js"
   ]
 }
